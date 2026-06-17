@@ -11,6 +11,7 @@ import os, html, json
 
 DOMAIN = "https://homecosthub.vercel.app"   # PLACEHOLDER — swap once founder picks a domain
 BRAND = "HomeCostHub"
+GSC_VERIFY = "google85e6075b23385072.html"  # Google Search Console HTML-file verification (keep forever)
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
 
@@ -327,6 +328,9 @@ def main():
         f.write(sm)
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
         f.write(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
+    # Google Search Console HTML-file verification (must stay live permanently)
+    with open(os.path.join(OUT, GSC_VERIFY), "w") as f:
+        f.write(f"google-site-verification: {GSC_VERIFY}\n")
     print(f"generated {len(pages)} city-trade pages + index + sitemap + robots into {OUT}")
     print("trades:", list(TRADES), "| cities:", list(CITIES))
 
