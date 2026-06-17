@@ -417,6 +417,81 @@ CITIES = {
     "note": "Charlotte is one of the more affordable major metros for home projects, with below-average labor costs and a growing contractor market. Hot, humid summers and occasional storms drive most HVAC and roofing demand here."},
 }
 
+FEATURED = ["sacramento","san-jose","fresno","san-diego","phoenix","los-angeles",
+            "austin","dallas","houston","denver","atlanta","chicago","miami","seattle","las-vegas","charlotte"]
+
+# ---------------------------------------------------------------- CALIFORNIA REGIONS (for bulk city pages)
+REGIONS = {
+ "bay-area": {"idx":1.35, "note":"The San Francisco Bay Area has some of the highest contractor labor rates in the country, along with strict California permitting, energy codes, and seismic requirements. The mild climate is easy on equipment, but demand and the cost of living keep nearly every home project well above the national average."},
+ "la-socal-coast": {"idx":1.22, "note":"Coastal Southern California pairs a mild, equipment-friendly climate with a high cost of living, strict California permitting and energy codes, and seismic requirements. Salt air near the coast can accelerate corrosion on rooftop HVAC and metal roofing, and labor runs above the national average."},
+ "inland-empire": {"idx":1.05, "note":"California's Inland Empire and high desert see hot, dry summers that make air conditioning and sun-resistant roofing priorities. Labor runs a little above the national average — below the coast — and projects still fall under California's permitting and energy rules."},
+ "central-valley": {"idx":0.95, "note":"California's Central Valley has lower labor costs than the coastal metros, but extreme summer heat makes hard-working air conditioning essential. It is one of the more affordable parts of California for home projects while still under the state's permit and energy codes."},
+ "sacramento-region": {"idx":1.05, "note":"The greater Sacramento region has hot, dry summers that push HVAC and roofing toward higher-efficiency options under California's Title 24 energy code. Labor runs a bit above the national average, with city and county permitting adding time and cost."},
+ "central-coast": {"idx":1.12, "note":"California's Central Coast enjoys a mild marine climate that is gentle on equipment, but limited contractor supply and a high cost of living keep project prices above the national average, on top of California permitting."},
+ "north-state": {"idx":1.02, "note":"Northern California and the Sierra foothills see colder winters, snow loads at elevation, and intense summer sun and wildfire exposure that drive demand for durable roofing and efficient heating. Labor sits near or just above the national average under California's permit rules."},
+}
+
+# (slug, "Name, CA", region) — incorporated California cities. Featured CA cities above are skipped automatically.
+CA_CITIES = [
+ # Bay Area
+ ("san-francisco","San Francisco, CA","bay-area"),("oakland","Oakland, CA","bay-area"),("fremont","Fremont, CA","bay-area"),
+ ("sunnyvale","Sunnyvale, CA","bay-area"),("santa-clara","Santa Clara, CA","bay-area"),("hayward","Hayward, CA","bay-area"),
+ ("concord","Concord, CA","bay-area"),("berkeley","Berkeley, CA","bay-area"),("daly-city","Daly City, CA","bay-area"),
+ ("san-mateo","San Mateo, CA","bay-area"),("redwood-city","Redwood City, CA","bay-area"),("mountain-view","Mountain View, CA","bay-area"),
+ ("palo-alto","Palo Alto, CA","bay-area"),("vallejo","Vallejo, CA","bay-area"),("fairfield","Fairfield, CA","bay-area"),
+ ("richmond","Richmond, CA","bay-area"),("antioch","Antioch, CA","bay-area"),("walnut-creek","Walnut Creek, CA","bay-area"),
+ ("pleasanton","Pleasanton, CA","bay-area"),("livermore","Livermore, CA","bay-area"),("san-rafael","San Rafael, CA","bay-area"),
+ ("napa","Napa, CA","bay-area"),("cupertino","Cupertino, CA","bay-area"),("milpitas","Milpitas, CA","bay-area"),
+ ("union-city","Union City, CA","bay-area"),("san-leandro","San Leandro, CA","bay-area"),("pittsburg","Pittsburg, CA","bay-area"),
+ ("vacaville","Vacaville, CA","bay-area"),("newark","Newark, CA","bay-area"),("brentwood","Brentwood, CA","bay-area"),
+ ("dublin","Dublin, CA","bay-area"),("san-ramon","San Ramon, CA","bay-area"),("santa-rosa","Santa Rosa, CA","bay-area"),
+ ("petaluma","Petaluma, CA","bay-area"),("novato","Novato, CA","bay-area"),("mountain-house","Mountain House, CA","bay-area"),
+ # LA / SoCal coast
+ ("long-beach","Long Beach, CA","la-socal-coast"),("santa-ana","Santa Ana, CA","la-socal-coast"),("anaheim","Anaheim, CA","la-socal-coast"),
+ ("irvine","Irvine, CA","la-socal-coast"),("huntington-beach","Huntington Beach, CA","la-socal-coast"),("glendale","Glendale, CA","la-socal-coast"),
+ ("santa-clarita","Santa Clarita, CA","la-socal-coast"),("oceanside","Oceanside, CA","la-socal-coast"),("garden-grove","Garden Grove, CA","la-socal-coast"),
+ ("torrance","Torrance, CA","la-socal-coast"),("pasadena","Pasadena, CA","la-socal-coast"),("orange","Orange, CA","la-socal-coast"),
+ ("fullerton","Fullerton, CA","la-socal-coast"),("thousand-oaks","Thousand Oaks, CA","la-socal-coast"),("simi-valley","Simi Valley, CA","la-socal-coast"),
+ ("carlsbad","Carlsbad, CA","la-socal-coast"),("costa-mesa","Costa Mesa, CA","la-socal-coast"),("ventura","Ventura, CA","la-socal-coast"),
+ ("santa-monica","Santa Monica, CA","la-socal-coast"),("newport-beach","Newport Beach, CA","la-socal-coast"),("chula-vista","Chula Vista, CA","la-socal-coast"),
+ ("escondido","Escondido, CA","la-socal-coast"),("el-cajon","El Cajon, CA","la-socal-coast"),("vista","Vista, CA","la-socal-coast"),
+ ("san-marcos","San Marcos, CA","la-socal-coast"),("encinitas","Encinitas, CA","la-socal-coast"),("burbank","Burbank, CA","la-socal-coast"),
+ ("inglewood","Inglewood, CA","la-socal-coast"),("downey","Downey, CA","la-socal-coast"),("west-covina","West Covina, CA","la-socal-coast"),
+ ("norwalk","Norwalk, CA","la-socal-coast"),("el-monte","El Monte, CA","la-socal-coast"),("carson","Carson, CA","la-socal-coast"),
+ ("compton","Compton, CA","la-socal-coast"),("mission-viejo","Mission Viejo, CA","la-socal-coast"),("whittier","Whittier, CA","la-socal-coast"),
+ # Inland Empire / desert
+ ("riverside","Riverside, CA","inland-empire"),("san-bernardino","San Bernardino, CA","inland-empire"),("fontana","Fontana, CA","inland-empire"),
+ ("moreno-valley","Moreno Valley, CA","inland-empire"),("rancho-cucamonga","Rancho Cucamonga, CA","inland-empire"),("ontario","Ontario, CA","inland-empire"),
+ ("corona","Corona, CA","inland-empire"),("victorville","Victorville, CA","inland-empire"),("murrieta","Murrieta, CA","inland-empire"),
+ ("temecula","Temecula, CA","inland-empire"),("rialto","Rialto, CA","inland-empire"),("hesperia","Hesperia, CA","inland-empire"),
+ ("chino","Chino, CA","inland-empire"),("indio","Indio, CA","inland-empire"),("redlands","Redlands, CA","inland-empire"),
+ ("chino-hills","Chino Hills, CA","inland-empire"),("upland","Upland, CA","inland-empire"),("apple-valley","Apple Valley, CA","inland-empire"),
+ ("palm-desert","Palm Desert, CA","inland-empire"),("palm-springs","Palm Springs, CA","inland-empire"),("hemet","Hemet, CA","inland-empire"),
+ ("menifee","Menifee, CA","inland-empire"),("jurupa-valley","Jurupa Valley, CA","inland-empire"),("lake-elsinore","Lake Elsinore, CA","inland-empire"),
+ # Central Valley
+ ("bakersfield","Bakersfield, CA","central-valley"),("stockton","Stockton, CA","central-valley"),("modesto","Modesto, CA","central-valley"),
+ ("visalia","Visalia, CA","central-valley"),("clovis","Clovis, CA","central-valley"),("merced","Merced, CA","central-valley"),
+ ("turlock","Turlock, CA","central-valley"),("tracy","Tracy, CA","central-valley"),("manteca","Manteca, CA","central-valley"),
+ ("madera","Madera, CA","central-valley"),("hanford","Hanford, CA","central-valley"),("tulare","Tulare, CA","central-valley"),
+ ("porterville","Porterville, CA","central-valley"),("lodi","Lodi, CA","central-valley"),("ceres","Ceres, CA","central-valley"),
+ # Sacramento region
+ ("elk-grove","Elk Grove, CA","sacramento-region"),("roseville","Roseville, CA","sacramento-region"),("folsom","Folsom, CA","sacramento-region"),
+ ("citrus-heights","Citrus Heights, CA","sacramento-region"),("rancho-cordova","Rancho Cordova, CA","sacramento-region"),("davis","Davis, CA","sacramento-region"),
+ ("woodland","Woodland, CA","sacramento-region"),("rocklin","Rocklin, CA","sacramento-region"),("lincoln","Lincoln, CA","sacramento-region"),
+ ("yuba-city","Yuba City, CA","sacramento-region"),("el-dorado-hills","El Dorado Hills, CA","sacramento-region"),
+ # Central Coast
+ ("santa-barbara","Santa Barbara, CA","central-coast"),("san-luis-obispo","San Luis Obispo, CA","central-coast"),("salinas","Salinas, CA","central-coast"),
+ ("santa-maria","Santa Maria, CA","central-coast"),("monterey","Monterey, CA","central-coast"),("santa-cruz","Santa Cruz, CA","central-coast"),
+ ("paso-robles","Paso Robles, CA","central-coast"),("watsonville","Watsonville, CA","central-coast"),("lompoc","Lompoc, CA","central-coast"),
+ # North state / Sierra
+ ("redding","Redding, CA","north-state"),("chico","Chico, CA","north-state"),("eureka","Eureka, CA","north-state"),
+ ("ukiah","Ukiah, CA","north-state"),("truckee","Truckee, CA","north-state"),("grass-valley","Grass Valley, CA","north-state"),
+ ("south-lake-tahoe","South Lake Tahoe, CA","north-state"),("auburn","Auburn, CA","north-state"),("red-bluff","Red Bluff, CA","north-state"),
+]
+for _slug, _name, _region in CA_CITIES:
+    if _slug not in CITIES:
+        CITIES[_slug] = {"name": _name, "idx": REGIONS[_region]["idx"], "note": REGIONS[_region]["note"]}
+
 # ---------------------------------------------------------------- TEMPLATE
 def page_html(tslug, t, cslug, c):
     idx = c["idx"]; cn = c["name"]; city_short = cn.split(",")[0]
@@ -446,10 +521,10 @@ def page_html(tslug, t, cslug, c):
         "author":{"@type":"Organization","name":BRAND},
         "publisher":{"@type":"Organization","name":BRAND,"url":DOMAIN},"description":desc}
     # other cities for this trade (internal links)
-    other_cities = "".join(
-        f'<a href="/how-much-does-{tslug}-cost-in-{oc}" class="text-emerald-700 underline">{CITIES[oc]["name"].split(",")[0]}</a>'
-        + (", " if i < len(CITIES)-1 else "")
-        for i, oc in enumerate(CITIES) )
+    _link_cities = [fc for fc in FEATURED if fc != cslug][:12]
+    other_cities = ", ".join(
+        f'<a href="/how-much-does-{tslug}-cost-in-{fc}" class="text-emerald-700 underline">{CITIES[fc]["name"].split(",")[0]}</a>'
+        for fc in _link_cities )
     other_trades = "".join(
         f'<li><a href="/how-much-does-{ot}-cost-in-{cslug}" class="text-emerald-700 underline">{TRADES[ot]["noun"].title()} in {city_short}</a></li>'
         for ot in TRADES if ot != tslug)
@@ -540,7 +615,8 @@ def index_html():
     for tslug, t in TRADES.items():
         links = "".join(
             f'<a href="/how-much-does-{tslug}-cost-in-{cslug}" class="block px-3 py-2 rounded-lg hover:bg-emerald-50 text-emerald-700">{CITIES[cslug]["name"]} →</a>'
-            for cslug in CITIES)
+            for cslug in FEATURED)
+        links += f'<div class="px-3 py-2 text-slate-500 text-sm">+ {len(CITIES)-len(FEATURED)} more cities</div>'
         cards += (f'<div class="border border-slate-200 rounded-2xl p-6">'
                   f'<h2 class="text-2xl font-bold mb-1">{t["noun"].title()} cost</h2>'
                   f'<p class="text-slate-600 mb-3">{YEAR} price ranges by city.</p>'
