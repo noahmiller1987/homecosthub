@@ -12,6 +12,7 @@ import os, html, json
 DOMAIN = "https://homecosthub.vercel.app"   # PLACEHOLDER — swap once founder picks a domain
 BRAND = "HomeCostHub"
 GSC_VERIFY = "google85e6075b23385072.html"  # Google Search Console HTML-file verification (keep forever)
+GSC_META = '<meta name="google-site-verification" content="2iO-r2Nf6_z4VdB0ddZifN9SKbcQXi1FrWdE1_GD6mQ" />'
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
 
@@ -199,6 +200,7 @@ def page_html(tslug, t, cslug, c):
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+{GSC_META}
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}" />
 <meta property="og:title" content="{html.escape(title)}" />
@@ -288,6 +290,7 @@ def index_html():
     return f"""<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+{GSC_META}
 <title>{BRAND} — Home Project Cost Guides by City ({YEAR})</title>
 <meta name="description" content="Real {YEAR} cost ranges for roof replacement, HVAC, kitchen remodels and water heaters — adjusted by city, with what drives the price and how to get local quotes." />
 <link rel="canonical" href="{DOMAIN}/" />
