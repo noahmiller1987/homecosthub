@@ -11,7 +11,7 @@ import os, html, json
 
 DOMAIN = "https://homecostcheck.com"   # live
 BRAND = "HomeCostCheck"
-GSC_VERIFY = "google85e6075b23385072.html"  # Google Search Console HTML-file verification (keep forever)
+GSC_VERIFY = "googleb4bfbdf2d083a997.html"  # Google Search Console HTML-file verification (keep forever)
 GSC_META = '<meta name="google-site-verification" content="2iO-r2Nf6_z4VdB0ddZifN9SKbcQXi1FrWdE1_GD6mQ" />'
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
