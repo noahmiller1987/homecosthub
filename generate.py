@@ -9,12 +9,39 @@ DOMAIN is the only thing to swap once a domain is chosen (founder gate).
 """
 import os, html, json
 
-DOMAIN = "https://homecostcheck.com"   # PLACEHOLDER — swap once founder picks a domain
+DOMAIN = "https://homecostcheck.com"   # live
 BRAND = "HomeCostCheck"
 GSC_VERIFY = "google85e6075b23385072.html"  # Google Search Console HTML-file verification (keep forever)
 GSC_META = '<meta name="google-site-verification" content="2iO-r2Nf6_z4VdB0ddZifN9SKbcQXi1FrWdE1_GD6mQ" />'
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
+
+# ---------------------------------------------------------------- LEAD-GEN / MONETIZATION
+# Every "Compare local quotes" CTA points to a real, working external lead-gen destination.
+# Interim = Thumbtack deep links (verified HTTP 200, no auth, genuinely useful to the visitor).
+# To MONETIZE: once a paid home-services affiliate is approved (Modernize / Networx / Angi
+# Leads / QuinStreet), set LEADGEN_AFFILIATE to its deep-link template and re-run — every page
+# switches to the paid link. {tt} = thumbtack slug, {zip} = primary city zip, {trade} = trade slug.
+LEADGEN_AFFILIATE = ""   # e.g. "https://modernize.com/r/PARTNERID?service={trade}&zip={zip}"
+TT_SLUG = {
+    "roof-replacement": "roofing",
+    "hvac-installation": "hvac",
+    "kitchen-remodel": "kitchen-remodeling",
+    "water-heater-replacement": "water-heater-installation",
+    "bathroom-remodel": "bathroom-remodeling",
+    "window-replacement": "window-installation",
+    "interior-painting": "interior-painting",
+    "flooring-installation": "flooring-installation",
+    "electrical-panel-upgrade": "electrical",
+    "solar-panel-installation": "solar-panel-installation",
+    "fence-installation": "fence-installation",
+    "garage-door-replacement": "garage-door-installation",
+}
+def leadgen_url(tslug, czip=""):
+    tt = TT_SLUG.get(tslug, "")
+    if LEADGEN_AFFILIATE:
+        return html.escape(LEADGEN_AFFILIATE.format(tt=tt, zip=czip, trade=tslug))
+    return f"https://www.thumbtack.com/k/{tt}/near-me/"
 
 def money(n):
     return "$" + format(int(round(n / 50.0) * 50), ",")
@@ -498,6 +525,7 @@ def page_html(tslug, t, cslug, c):
     headline_range = rng(t["lo"], t["hi"], idx)
     slug = f"how-much-does-{tslug}-cost-in-{cslug}"
     url = f"{DOMAIN}/{slug}"
+    lg = leadgen_url(tslug, c.get("zip", ""))
     title = f"How Much Does {t['noun'].title()} Cost in {city_short}? ({YEAR} Prices)"
     desc = (f"{t['noun'].title()} in {cn} typically costs {headline_range} {t['basis']}. "
             f"See {YEAR} price ranges, what drives the cost, and how to get local quotes.")
@@ -564,7 +592,7 @@ def page_html(tslug, t, cslug, c):
   <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 my-6">
     <p class="font-semibold text-emerald-900 mb-2">Get free {t['noun']} quotes from vetted {html.escape(city_short)} pros</p>
     <p class="text-slate-700 mb-4">Compare a few local quotes before you commit — prices for the same job vary widely between contractors.</p>
-    <a href="#quote" data-affiliate="lead-gen-slot" class="inline-block bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700">Compare local quotes →</a>
+    <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" class="inline-block bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700">Compare local quotes →</a>
   </div>
 
   <h2 class="text-2xl font-bold mt-10 mb-3">{html.escape(t['table_title'])} in {html.escape(city_short)}</h2>
@@ -586,10 +614,10 @@ def page_html(tslug, t, cslug, c):
   <h2 class="text-2xl font-bold mt-10 mb-4">Frequently asked questions</h2>
   {faq_html}
 
-  <div class="bg-slate-900 text-white rounded-2xl p-8 mt-10" id="quote">
+  <div class="bg-slate-900 text-white rounded-2xl p-8 mt-10">
     <div class="text-emerald-400 text-sm font-semibold uppercase tracking-wider mb-2">Ready to start?</div>
     <h3 class="text-2xl font-bold mb-3">Get matched with vetted {html.escape(city_short)} {t['noun']} pros and compare free quotes.</h3>
-    <a href="#" data-affiliate="lead-gen-slot" class="inline-block bg-white text-slate-900 font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-100">Compare local quotes →</a>
+    <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" class="inline-block bg-white text-slate-900 font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-100">Compare local quotes →</a>
   </div>
 
   <h2 class="text-xl font-bold mt-10 mb-3">{t['noun'].title()} costs in other cities</h2>
