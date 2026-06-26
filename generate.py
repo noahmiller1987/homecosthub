@@ -16,6 +16,31 @@ GSC_META = '<meta name="google-site-verification" content="2iO-r2Nf6_z4VdB0ddZif
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
 
+# ---------------------------------------------------------------- ANALYTICS / SOCIAL
+# GA4: founder drops the real Measurement ID here. While it stays the placeholder (or empty)
+# the gtag snippet is NOT emitted, so nothing breaks and no bad pageviews are recorded.
+GA4_ID = "G-XXXXXXXXXX"   # <- replace with real GA4 Measurement ID (e.g. G-ABC1234XYZ)
+OG_IMAGE = f"{DOMAIN}/og.png"   # single static social-share image generated into web/
+
+def ga_snippet():
+    """GA4 gtag for <head>; no-op until GA4_ID is set to a real Measurement ID."""
+    if not GA4_ID or GA4_ID == "G-XXXXXXXXXX":
+        return ""
+    return (f'<script async src="https://www.googletagmanager.com/gtag/js?id={GA4_ID}"></script>\n'
+            f'<script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}'
+            f"gtag('js',new Date());gtag('config','{GA4_ID}');</script>")
+
+def cta_tracking_js():
+    """Fires a GA4 'outbound_click' event for any element with a data-cta attribute.
+    Safe no-op when gtag is undefined (i.e. GA4_ID not configured)."""
+    return ("<script>document.addEventListener('click',function(e){"
+            "var a=e.target.closest&&e.target.closest('[data-cta]');"
+            "if(a&&typeof gtag==='function'){gtag('event','outbound_click',"
+            "{cta:a.getAttribute('data-cta'),link_url:a.href});}},true);</script>")
+
+FAVICON = ("<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' "
+           "viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E\U0001F3E0%3C/text%3E%3C/svg%3E\" />")
+
 # ---------------------------------------------------------------- LEAD-GEN / MONETIZATION
 # Every "Compare local quotes" CTA points to a real, working external lead-gen destination.
 # Interim = Thumbtack deep links (verified HTTP 200, no auth, genuinely useful to the visitor).
@@ -517,7 +542,98 @@ CA_CITIES = [
 ]
 for _slug, _name, _region in CA_CITIES:
     if _slug not in CITIES:
-        CITIES[_slug] = {"name": _name, "idx": REGIONS[_region]["idx"], "note": REGIONS[_region]["note"]}
+        CITIES[_slug] = {"name": _name, "idx": REGIONS[_region]["idx"], "note": REGIONS[_region]["note"], "region": _region}
+
+# ---------------------------------------------------------------- GROUPING / NAV HELPERS
+REGION_TITLES = {
+  "bay-area": "San Francisco Bay Area",
+  "la-socal-coast": "Los Angeles & Southern California Coast",
+  "inland-empire": "Inland Empire & High Desert",
+  "central-valley": "Central Valley",
+  "sacramento-region": "Greater Sacramento",
+  "central-coast": "Central Coast",
+  "north-state": "Northern California & Sierra",
+}
+
+def city_groups():
+    """Ordered [(group_title, [city_slugs])] covering EVERY city exactly once:
+    featured metros first, then the remaining California cities by region."""
+    groups = [("Popular metros", list(FEATURED))]
+    for region in REGIONS:
+        slugs = [s for (s, n, r) in CA_CITIES if r == region and s not in FEATURED]
+        if slugs:
+            groups.append((REGION_TITLES.get(region, region), slugs))
+    return groups
+
+def head(title, desc, canonical, og_type="website", ld_blocks=()):
+    """Shared <head> markup: meta, OG (incl. og:image), canonical, fonts, GA4, JSON-LD."""
+    ld = "".join(f'<script type="application/ld+json">{json.dumps(b)}</script>\n' for b in ld_blocks)
+    return f"""<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+{GSC_META}
+<title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(desc)}" />
+<meta property="og:title" content="{html.escape(title)}" />
+<meta property="og:description" content="{html.escape(desc)}" />
+<meta property="og:type" content="{og_type}" />
+<meta property="og:url" content="{canonical}" />
+<meta property="og:image" content="{OG_IMAGE}" />
+<meta property="og:site_name" content="{BRAND}" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="{OG_IMAGE}" />
+<link rel="canonical" href="{canonical}" />
+{FAVICON}
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>body{{font-family:Inter,system-ui,sans-serif}}</style>
+{ga_snippet()}
+{ld}"""
+
+def site_header():
+    return f"""<header class="border-b border-slate-200 sticky top-0 bg-white/80 backdrop-blur z-50">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="font-bold text-xl">\U0001F3E0 {BRAND}</a>
+    <nav class="text-sm text-slate-600 flex gap-4">
+      <a href="/cities" class="hover:text-slate-900">Cities</a>
+      <a href="/how-we-estimate" class="hover:text-slate-900">How we estimate</a>
+    </nav>
+  </div>
+</header>"""
+
+def site_footer():
+    """Global footer — links every trade hub + the cities index + E-E-A-T pages on every page."""
+    trade_links = "".join(
+        f'<a href="/{ts}" class="hover:text-slate-900 block py-0.5">{TRADES[ts]["noun"].title()} cost</a>'
+        for ts in TRADES)
+    return f"""<footer class="border-t border-slate-200 mt-12 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-6 py-10 text-sm text-slate-500">
+    <div class="grid sm:grid-cols-4 gap-6 mb-8">
+      <div class="sm:col-span-2">
+        <div class="font-bold text-slate-900 mb-2">\U0001F3E0 {BRAND}</div>
+        <p>Independent {YEAR} home-project cost guides, adjusted city by city. Cost ranges are general estimates for guidance only, not quotes.</p>
+      </div>
+      <div>
+        <div class="font-semibold text-slate-700 mb-2">Project costs</div>
+        {trade_links}
+      </div>
+      <div>
+        <div class="font-semibold text-slate-700 mb-2">Company</div>
+        <a href="/" class="hover:text-slate-900 block py-0.5">Home</a>
+        <a href="/cities" class="hover:text-slate-900 block py-0.5">All cities</a>
+        <a href="/about" class="hover:text-slate-900 block py-0.5">About</a>
+        <a href="/how-we-estimate" class="hover:text-slate-900 block py-0.5">How we estimate</a>
+      </div>
+    </div>
+    <div class="border-t border-slate-200 pt-6">© {YEAR} {BRAND}. Cost ranges are general estimates for guidance only, not quotes.</div>
+  </div>
+</footer>
+{cta_tracking_js()}"""
+
+SOURCE_NOTE = ("Ranges are typical national project costs from public contractor-pricing and "
+               "industry references (e.g. RSMeans-style cost data and HomeAdvisor/Angi-type "
+               "surveys), adjusted by a local cost-of-construction index for each city. "
+               "<a href=\"/how-we-estimate\" class=\"text-emerald-700 underline\">See our methodology</a>.")
 
 # ---------------------------------------------------------------- TEMPLATE
 def page_html(tslug, t, cslug, c):
@@ -548,6 +664,11 @@ def page_html(tslug, t, cslug, c):
         "headline":title,"datePublished":"2026-06-16","dateModified":"2026-06-16",
         "author":{"@type":"Organization","name":BRAND},
         "publisher":{"@type":"Organization","name":BRAND,"url":DOMAIN},"description":desc}
+    breadcrumb_ld = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":f"{DOMAIN}/"},
+        {"@type":"ListItem","position":2,"name":f"{t['noun'].title()} cost","item":f"{DOMAIN}/{tslug}"},
+        {"@type":"ListItem","position":3,"name":city_short,"item":f"{DOMAIN}/{cslug}"},
+        {"@type":"ListItem","position":4,"name":f"{t['noun'].title()} in {city_short}","item":url}]}
     # other cities for this trade (internal links)
     _link_cities = [fc for fc in FEATURED if fc != cslug][:12]
     other_cities = ", ".join(
@@ -559,32 +680,17 @@ def page_html(tslug, t, cslug, c):
     return f"""<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-{GSC_META}
-<title>{html.escape(title)}</title>
-<meta name="description" content="{html.escape(desc)}" />
-<meta property="og:title" content="{html.escape(title)}" />
-<meta property="og:description" content="{html.escape(desc)}" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="{url}" />
-<link rel="canonical" href="{url}" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E\U0001F3E0%3C/text%3E%3C/svg%3E" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>body{{font-family:Inter,system-ui,sans-serif}}</style>
-<script type="application/ld+json">{json.dumps(article_ld)}</script>
-<script type="application/ld+json">{json.dumps(faq_ld)}</script>
+{head(title, desc, url, og_type="article", ld_blocks=(article_ld, faq_ld, breadcrumb_ld))}
 </head>
 <body class="antialiased text-slate-900 bg-white">
-<header class="border-b border-slate-200 sticky top-0 bg-white/80 backdrop-blur z-50">
-  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="/" class="font-bold text-xl">\U0001F3E0 {BRAND}</a>
-    <a href="/" class="text-sm text-slate-600 hover:text-slate-900">All cost guides</a>
-  </div>
-</header>
+{site_header()}
 <article class="max-w-3xl mx-auto px-6 py-12">
+  <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-emerald-700">Home</a> ›
+    <a href="/{tslug}" class="hover:text-emerald-700">{t['noun'].title()} cost</a> ›
+    <a href="/{cslug}" class="hover:text-emerald-700">{html.escape(city_short)}</a> ›
+    <span class="text-slate-700">{t['noun'].title()}</span>
+  </nav>
   <div class="text-emerald-700 text-sm font-semibold uppercase tracking-wider mb-3">{YEAR} cost guide · {html.escape(cn)}</div>
   <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-4">How much does {t['noun']} cost in {html.escape(city_short)}?</h1>
   <p class="text-xl text-slate-600 leading-relaxed mb-6">In {html.escape(cn)}, {t['a']} typically costs <strong>{headline_range}</strong> {t['basis']}. {html.escape(t['intro'])}</p>
@@ -592,7 +698,7 @@ def page_html(tslug, t, cslug, c):
   <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6 my-6">
     <p class="font-semibold text-emerald-900 mb-2">Get free {t['noun']} quotes from vetted {html.escape(city_short)} pros</p>
     <p class="text-slate-700 mb-4">Compare a few local quotes before you commit — prices for the same job vary widely between contractors.</p>
-    <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" class="inline-block bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700">Compare local quotes →</a>
+    <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" data-cta="compare-quotes-top" class="inline-block bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700">Compare local quotes →</a>
   </div>
 
   <h2 class="text-2xl font-bold mt-10 mb-3">{html.escape(t['table_title'])} in {html.escape(city_short)}</h2>
@@ -604,6 +710,7 @@ def page_html(tslug, t, cslug, c):
     </table>
   </div>
   <p class="text-sm text-slate-500 italic">Estimates for {YEAR}; actual quotes vary by home, scope, and contractor. Always get written bids.</p>
+  <p class="text-sm text-slate-500 mt-2"><strong>How we estimate:</strong> {SOURCE_NOTE}</p>
 
   <h2 class="text-2xl font-bold mt-10 mb-3">What drives {t['noun']} cost</h2>
   <ul class="list-disc pl-6 space-y-2 text-lg leading-relaxed">{factors}</ul>
@@ -617,77 +724,278 @@ def page_html(tslug, t, cslug, c):
   <div class="bg-slate-900 text-white rounded-2xl p-8 mt-10">
     <div class="text-emerald-400 text-sm font-semibold uppercase tracking-wider mb-2">Ready to start?</div>
     <h3 class="text-2xl font-bold mb-3">Get matched with vetted {html.escape(city_short)} {t['noun']} pros and compare free quotes.</h3>
-    <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" class="inline-block bg-white text-slate-900 font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-100">Compare local quotes →</a>
+    <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" data-cta="compare-quotes-bottom" class="inline-block bg-white text-slate-900 font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-100">Compare local quotes →</a>
   </div>
 
   <h2 class="text-xl font-bold mt-10 mb-3">{t['noun'].title()} costs in other cities</h2>
-  <p class="text-slate-700 mb-4">{other_cities}</p>
+  <p class="text-slate-700 mb-2">{other_cities}</p>
+  <p class="mb-4"><a href="/{tslug}" class="text-emerald-700 font-semibold underline">See {t['noun']} costs in all {len(CITIES)} cities →</a></p>
   <h2 class="text-xl font-bold mt-6 mb-3">Other project costs in {html.escape(city_short)}</h2>
   <ul class="list-disc pl-6 space-y-1">{other_trades}</ul>
+  <p class="mt-2"><a href="/{cslug}" class="text-emerald-700 font-semibold underline">See all home project costs in {html.escape(city_short)} →</a></p>
 
-  <p class="text-sm text-slate-500 mt-8 italic">Published 2026-06-16. Cost ranges are general {YEAR} estimates for guidance only, not quotes. Get written bids from licensed local contractors.</p>
+  <p class="text-sm text-slate-500 mt-8 italic">Published 2026-06-16. Cost ranges are general {YEAR} estimates for guidance only, not quotes. Get written bids from licensed local contractors. See <a href="/how-we-estimate" class="underline">how we estimate</a> and <a href="/about" class="underline">about us</a>.</p>
 </article>
-<footer class="border-t border-slate-200 mt-12">
-  <div class="max-w-5xl mx-auto px-6 py-8 text-sm text-slate-500 flex flex-col sm:flex-row gap-3 justify-between">
-    <div>© {YEAR} {BRAND}. Home project cost guides.</div>
-    <a href="/" class="hover:text-slate-900">All cost guides</a>
-  </div>
-</footer>
+{site_footer()}
+</body>
+</html>
+"""
+
+# ---------------------------------------------------------------- CITY HUB  (/[city])
+def city_hub_html(cslug, c):
+    cn = c["name"]; city_short = cn.split(",")[0]; idx = c["idx"]
+    url = f"{DOMAIN}/{cslug}"
+    title = f"Home Project Costs in {city_short} ({YEAR} Price Guide) — {BRAND}"
+    desc = (f"{YEAR} cost ranges for {len(TRADES)} home projects in {cn} — roofing, HVAC, "
+            f"kitchen and bath remodels, windows, solar and more, adjusted for local {city_short} prices.")
+    breadcrumb_ld = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":f"{DOMAIN}/"},
+        {"@type":"ListItem","position":2,"name":"Cities","item":f"{DOMAIN}/cities"},
+        {"@type":"ListItem","position":3,"name":city_short,"item":url}]}
+    cards = "".join(
+        f'<a href="/how-much-does-{ts}-cost-in-{cslug}" class="block border border-slate-200 rounded-xl p-5 hover:border-emerald-400 hover:bg-emerald-50/40">'
+        f'<div class="font-bold text-lg">{TRADES[ts]["noun"].title()}</div>'
+        f'<div class="text-emerald-700 font-semibold">{rng(TRADES[ts]["lo"], TRADES[ts]["hi"], idx)}</div>'
+        f'<div class="text-sm text-slate-500">{TRADES[ts]["basis"]}</div></a>'
+        for ts in TRADES)
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+{head(title, desc, url, og_type="website", ld_blocks=(breadcrumb_ld,))}
+</head>
+<body class="antialiased text-slate-900 bg-white">
+{site_header()}
+<main class="max-w-5xl mx-auto px-6 py-12">
+  <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-emerald-700">Home</a> ›
+    <a href="/cities" class="hover:text-emerald-700">Cities</a> ›
+    <span class="text-slate-700">{html.escape(city_short)}</span>
+  </nav>
+  <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">Home project costs in {html.escape(city_short)}</h1>
+  <p class="text-xl text-slate-600 leading-relaxed mb-6">{YEAR} price ranges for the home projects {html.escape(city_short)} homeowners budget for, adjusted for local labor and permit costs. {html.escape(c['note'])}</p>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{cards}</div>
+  <p class="text-sm text-slate-500 mt-8">{SOURCE_NOTE}</p>
+</main>
+{site_footer()}
+</body>
+</html>
+"""
+
+# ---------------------------------------------------------------- TRADE HUB  (/[trade])
+def trade_hub_html(tslug, t):
+    url = f"{DOMAIN}/{tslug}"
+    noun = t["noun"]
+    title = f"{noun.title()} Cost by City ({YEAR}) — {BRAND}"
+    desc = (f"Compare {YEAR} {noun} cost ranges across {len(CITIES)} cities. {t['intro'][:120]}")
+    breadcrumb_ld = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":f"{DOMAIN}/"},
+        {"@type":"ListItem","position":2,"name":f"{noun.title()} cost","item":url}]}
+    sections = ""
+    for group_title, slugs in city_groups():
+        items = "".join(
+            f'<a href="/how-much-does-{tslug}-cost-in-{cs}" class="flex justify-between gap-3 border-b border-slate-100 py-2 hover:text-emerald-700">'
+            f'<span>{CITIES[cs]["name"].split(",")[0]}</span>'
+            f'<span class="text-slate-500 whitespace-nowrap">{rng(t["lo"], t["hi"], CITIES[cs]["idx"])}</span></a>'
+            for cs in slugs)
+        sections += (f'<h2 class="text-xl font-bold mt-8 mb-2">{html.escape(group_title)}</h2>'
+                     f'<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8">{items}</div>')
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+{head(title, desc, url, og_type="website", ld_blocks=(breadcrumb_ld,))}
+</head>
+<body class="antialiased text-slate-900 bg-white">
+{site_header()}
+<main class="max-w-5xl mx-auto px-6 py-12">
+  <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-emerald-700">Home</a> ›
+    <span class="text-slate-700">{noun.title()} cost</span>
+  </nav>
+  <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">{noun.title()} cost by city</h1>
+  <p class="text-xl text-slate-600 leading-relaxed mb-2">{html.escape(t['intro'])}</p>
+  <p class="text-lg text-slate-600 mb-6">Nationally this runs about <strong>{rng(t['lo'], t['hi'], 1.0)}</strong> {t['basis']}. Pick your city for a local {YEAR} estimate.</p>
+  {sections}
+  <p class="text-sm text-slate-500 mt-10">{SOURCE_NOTE}</p>
+</main>
+{site_footer()}
+</body>
+</html>
+"""
+
+# ---------------------------------------------------------------- CITIES INDEX  (/cities)
+def cities_index_html():
+    url = f"{DOMAIN}/cities"
+    title = f"All Cities — Home Project Cost Guides ({YEAR}) — {BRAND}"
+    desc = f"Browse {YEAR} home-project cost guides for all {len(CITIES)} cities we cover, from major metros to California cities by region."
+    sections = ""
+    for group_title, slugs in city_groups():
+        items = "".join(
+            f'<a href="/{cs}" class="block border-b border-slate-100 py-2 hover:text-emerald-700">{CITIES[cs]["name"]}</a>'
+            for cs in slugs)
+        sections += (f'<h2 class="text-xl font-bold mt-8 mb-2">{html.escape(group_title)}</h2>'
+                     f'<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8">{items}</div>')
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+{head(title, desc, url)}
+</head>
+<body class="antialiased text-slate-900 bg-white">
+{site_header()}
+<main class="max-w-5xl mx-auto px-6 py-12">
+  <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-emerald-700">Home</a> › <span class="text-slate-700">Cities</span>
+  </nav>
+  <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">All cities we cover</h1>
+  <p class="text-xl text-slate-600 mb-6">Pick a city to see {YEAR} cost ranges for every project, or browse a specific project by city.</p>
+  {sections}
+</main>
+{site_footer()}
+</body>
+</html>
+"""
+
+# ---------------------------------------------------------------- E-E-A-T: ABOUT
+def about_html():
+    url = f"{DOMAIN}/about"
+    title = f"About {BRAND} — Independent Home Project Cost Guides"
+    desc = f"{BRAND} publishes independent, city-adjusted home-improvement cost estimates to help homeowners budget and compare local quotes with confidence."
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+{head(title, desc, url)}
+</head>
+<body class="antialiased text-slate-900 bg-white">
+{site_header()}
+<article class="max-w-3xl mx-auto px-6 py-12 prose-slate">
+  <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-emerald-700">Home</a> › <span class="text-slate-700">About</span>
+  </nav>
+  <h1 class="text-4xl font-extrabold tracking-tight mb-4">About {BRAND}</h1>
+  <p class="text-xl text-slate-600 leading-relaxed mb-6">{BRAND} is an independent home-improvement cost reference. We help homeowners answer one question before they call a contractor: <em>what should this realistically cost where I live?</em></p>
+  <h2 class="text-2xl font-bold mt-8 mb-3">Why we built this</h2>
+  <p class="text-lg leading-relaxed text-slate-700 mb-4">Most "cost calculators" either hide their numbers behind a lead form or quote a single national figure that ignores how much local labor, permits, and climate change the price. We publish the full {YEAR} range up front, for every project, adjusted city by city — no email required to see it.</p>
+  <h2 class="text-2xl font-bold mt-8 mb-3">How we make money</h2>
+  <p class="text-lg leading-relaxed text-slate-700 mb-4">Our guides are free to read. When you choose to compare local quotes, we link to third-party contractor-matching services and may earn a referral fee. That never changes the cost ranges we publish, and we always label those links.</p>
+  <h2 class="text-2xl font-bold mt-8 mb-3">Independence &amp; accuracy</h2>
+  <p class="text-lg leading-relaxed text-slate-700 mb-4">We are not a contractor and do not sell home-improvement services. Our estimates are guidance for budgeting, not quotes — always get written bids from licensed local pros. See <a href="/how-we-estimate" class="text-emerald-700 underline">how we estimate</a> for our methodology and sources.</p>
+  <p class="text-lg leading-relaxed text-slate-700">Spot a number that looks off for your area? We update ranges as labor and material costs move. Reach us through the contractor partners linked on each page.</p>
+</article>
+{site_footer()}
+</body>
+</html>
+"""
+
+# ---------------------------------------------------------------- E-E-A-T: METHODOLOGY
+def how_we_estimate_html():
+    url = f"{DOMAIN}/how-we-estimate"
+    title = f"How We Estimate Costs — Methodology — {BRAND}"
+    desc = f"Our methodology: how {BRAND} builds {YEAR} home-project cost ranges from national pricing data and a local cost-of-construction index for each city."
+    trade_list = "".join(f"<li>{t['noun'].title()}</li>" for t in TRADES.values())
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+{head(title, desc, url)}
+</head>
+<body class="antialiased text-slate-900 bg-white">
+{site_header()}
+<article class="max-w-3xl mx-auto px-6 py-12">
+  <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-emerald-700">Home</a> › <span class="text-slate-700">How we estimate</span>
+  </nav>
+  <h1 class="text-4xl font-extrabold tracking-tight mb-4">How we estimate costs</h1>
+  <p class="text-xl text-slate-600 leading-relaxed mb-6">Every range on {BRAND} is built the same transparent way, so you know exactly what the numbers mean before you budget.</p>
+
+  <h2 class="text-2xl font-bold mt-8 mb-3">1. Start with a national baseline</h2>
+  <p class="text-lg leading-relaxed text-slate-700 mb-4">For each project we set a typical national low–high range for a clearly defined scope (for example, a roof replacement on a 2,000 sq ft single-family home). These baselines are drawn from public contractor-pricing references and homeowner-reported cost surveys — the same kinds of sources behind widely cited construction cost data such as <strong>RSMeans</strong>-style unit-cost databases and <strong>HomeAdvisor/Angi</strong>-type project surveys — cross-checked against multiple sources rather than any single quote.</p>
+
+  <h2 class="text-2xl font-bold mt-8 mb-3">2. Adjust for your city</h2>
+  <p class="text-lg leading-relaxed text-slate-700 mb-4">Labor rates, permit fees, energy codes, and climate drive most of the price difference between metros. We apply a <strong>local cost-of-construction index</strong> to the national baseline for each city — values above 1.0 mean a market runs above the national average (high-cost coastal metros), and values below 1.0 mean it runs below. That is why the same project shows a different range in San Jose than in Fresno.</p>
+
+  <h2 class="text-2xl font-bold mt-8 mb-3">3. Round to honest ranges</h2>
+  <p class="text-lg leading-relaxed text-slate-700 mb-4">We publish rounded low–high ranges, not false-precision point estimates, because real quotes vary with your home's condition, the finishes you choose, and how busy local contractors are. Always treat our numbers as a budgeting guide and get written bids.</p>
+
+  <h2 class="text-2xl font-bold mt-8 mb-3">Projects we cover</h2>
+  <ul class="list-disc pl-6 space-y-1 text-lg text-slate-700 mb-4">{trade_list}</ul>
+
+  <h2 class="text-2xl font-bold mt-8 mb-3">What our estimates are not</h2>
+  <p class="text-lg leading-relaxed text-slate-700">They are not quotes, appraisals, or guarantees of price. They do not account for unusual site conditions, premium custom work, or emergency scheduling. For a binding price, get itemized written bids from licensed contractors in your area. Learn more <a href="/about" class="text-emerald-700 underline">about us</a>.</p>
+</article>
+{site_footer()}
 </body>
 </html>
 """
 
 # ---------------------------------------------------------------- INDEX
 def index_html():
+    title = f"{BRAND} — Home Project Cost Guides by City ({YEAR})"
+    desc = (f"Real {YEAR} cost ranges for roof replacement, HVAC, kitchen and bath remodels, "
+            f"windows, solar and more — adjusted by city, with what drives the price and how to get local quotes.")
     cards = ""
     for tslug, t in TRADES.items():
         links = "".join(
             f'<a href="/how-much-does-{tslug}-cost-in-{cslug}" class="block px-3 py-2 rounded-lg hover:bg-emerald-50 text-emerald-700">{CITIES[cslug]["name"]} →</a>'
             for cslug in FEATURED)
-        links += f'<div class="px-3 py-2 text-slate-500 text-sm">+ {len(CITIES)-len(FEATURED)} more cities</div>'
+        links += f'<a href="/{tslug}" class="block px-3 py-2 rounded-lg hover:bg-emerald-50 text-slate-500 text-sm">+ all {len(CITIES)} cities →</a>'
         cards += (f'<div class="border border-slate-200 rounded-2xl p-6">'
-                  f'<h2 class="text-2xl font-bold mb-1">{t["noun"].title()} cost</h2>'
+                  f'<h2 class="text-2xl font-bold mb-1"><a href="/{tslug}" class="hover:text-emerald-700">{t["noun"].title()} cost</a></h2>'
                   f'<p class="text-slate-600 mb-3">{YEAR} price ranges by city.</p>'
                   f'<div class="grid sm:grid-cols-2 gap-1">{links}</div></div>')
     return f"""<!doctype html>
 <html lang="en"><head>
-<meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-{GSC_META}
-<title>{BRAND} — Home Project Cost Guides by City ({YEAR})</title>
-<meta name="description" content="Real {YEAR} cost ranges for roof replacement, HVAC, kitchen remodels and water heaters — adjusted by city, with what drives the price and how to get local quotes." />
-<link rel="canonical" href="{DOMAIN}/" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E\U0001F3E0%3C/text%3E%3C/svg%3E" />
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>body{{font-family:Inter,system-ui,sans-serif}}</style>
+{head(title, desc, f"{DOMAIN}/")}
 </head><body class="antialiased text-slate-900 bg-white">
-<header class="border-b border-slate-200"><div class="max-w-5xl mx-auto px-6 py-4 font-bold text-xl">\U0001F3E0 {BRAND}</div></header>
+{site_header()}
 <section class="max-w-3xl mx-auto px-6 pt-16 pb-8 text-center">
   <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">What does it really cost?</h1>
-  <p class="text-xl text-slate-600">Straight {YEAR} price ranges for the home projects people actually budget for — adjusted city by city, with what drives the cost and how to get local quotes.</p>
+  <p class="text-xl text-slate-600 mb-6">Straight {YEAR} price ranges for the home projects people actually budget for — adjusted city by city, with what drives the cost and how to get local quotes.</p>
+  <a href="/cities" class="inline-block bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700">Browse all {len(CITIES)} cities →</a>
 </section>
 <section class="max-w-5xl mx-auto px-6 pb-20"><div class="grid md:grid-cols-2 gap-6">{cards}</div></section>
-<footer class="border-t border-slate-200"><div class="max-w-5xl mx-auto px-6 py-8 text-sm text-slate-500">© {YEAR} {BRAND}. Cost ranges are general estimates for guidance only, not quotes.</div></footer>
+{site_footer()}
 </body></html>
 """
 
 # ---------------------------------------------------------------- WRITE
+def write(slug, contents):
+    with open(os.path.join(OUT, slug + ".html"), "w") as f:
+        f.write(contents)
+
 def main():
-    pages = []
+    cost_pages = []     # priority 0.8
+    hub_pages = []      # priority 0.7  (city + trade hubs)
+    info_pages = []     # priority 0.6  (cities index, about, methodology)
+
+    # cost pages
     for tslug, t in TRADES.items():
         for cslug, c in CITIES.items():
             slug = f"how-much-does-{tslug}-cost-in-{cslug}"
-            with open(os.path.join(OUT, slug + ".html"), "w") as f:
-                f.write(page_html(tslug, t, cslug, c))
-            pages.append(slug)
+            write(slug, page_html(tslug, t, cslug, c))
+            cost_pages.append(slug)
+    # per-city hubs (/[city])
+    for cslug, c in CITIES.items():
+        write(cslug, city_hub_html(cslug, c))
+        hub_pages.append(cslug)
+    # per-trade hubs (/[trade])
+    for tslug, t in TRADES.items():
+        write(tslug, trade_hub_html(tslug, t))
+        hub_pages.append(tslug)
+    # browsable cities index + E-E-A-T pages
+    write("cities", cities_index_html()); info_pages.append("cities")
+    write("about", about_html()); info_pages.append("about")
+    write("how-we-estimate", how_we_estimate_html()); info_pages.append("how-we-estimate")
+    # home
     with open(os.path.join(OUT, "index.html"), "w") as f:
         f.write(index_html())
+
     # sitemap
-    urls = [f"{DOMAIN}/"] + [f"{DOMAIN}/{p}" for p in pages]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    for u in urls:
-        pri = "1.0" if u.endswith("/") else "0.8"
+    def add(u, pri):
+        nonlocal sm
         sm += f"  <url><loc>{u}</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>{pri}</priority></url>\n"
+    add(f"{DOMAIN}/", "1.0")
+    for p in info_pages: add(f"{DOMAIN}/{p}", "0.7")
+    for p in hub_pages:  add(f"{DOMAIN}/{p}", "0.7")
+    for p in cost_pages: add(f"{DOMAIN}/{p}", "0.8")
     sm += "</urlset>\n"
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
         f.write(sm)
@@ -696,8 +1004,11 @@ def main():
     # Google Search Console HTML-file verification (must stay live permanently)
     with open(os.path.join(OUT, GSC_VERIFY), "w") as f:
         f.write(f"google-site-verification: {GSC_VERIFY}\n")
-    print(f"generated {len(pages)} city-trade pages + index + sitemap + robots into {OUT}")
-    print("trades:", list(TRADES), "| cities:", list(CITIES))
+    total = len(cost_pages) + len(hub_pages) + len(info_pages) + 1
+    print(f"generated {len(cost_pages)} cost pages + {len(hub_pages)} hub pages "
+          f"({len(CITIES)} city + {len(TRADES)} trade) + {len(info_pages)} info pages + index "
+          f"= {total} pages, sitemap + robots into {OUT}")
+    print(f"GA4: {'CONFIGURED ('+GA4_ID+')' if ga_snippet() else 'placeholder (no-op)'} | og:image: {OG_IMAGE}")
 
 if __name__ == "__main__":
     main()
