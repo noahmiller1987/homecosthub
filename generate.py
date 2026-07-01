@@ -13,6 +13,7 @@ DOMAIN = "https://homecostcheck.com"   # live
 BRAND = "HomeCostCheck"
 GSC_VERIFY = "googleb4bfbdf2d083a997.html"  # Google Search Console HTML-file verification (keep forever)
 GSC_META = '<meta name="google-site-verification" content="2iO-r2Nf6_z4VdB0ddZifN9SKbcQXi1FrWdE1_GD6mQ" />'
+IMPACT_META = "<meta name='impact-site-verification' value='bf325fb6-5304-4fc8-8899-0c9034f3d34f'>"
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
 
@@ -571,6 +572,7 @@ def head(title, desc, canonical, og_type="website", ld_blocks=()):
     return f"""<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 {GSC_META}
+{IMPACT_META}
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}" />
 <meta property="og:title" content="{html.escape(title)}" />
