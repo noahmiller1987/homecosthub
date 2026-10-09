@@ -590,6 +590,7 @@ def head(title, desc, canonical, og_type="website", ld_blocks=()):
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>body{{font-family:Inter,system-ui,sans-serif}}</style>
 {ga_snippet()}
+<script defer src="/_vercel/insights/script.js"></script>
 {ld}"""
 
 def site_header():
