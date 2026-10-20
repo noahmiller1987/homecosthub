@@ -16,6 +16,9 @@ GSC_META = '<meta name="google-site-verification" content="2iO-r2Nf6_z4VdB0ddZif
 IMPACT_META = "<meta name='impact-site-verification' value='bf325fb6-5304-4fc8-8899-0c9034f3d34f'>"
 OUT = os.path.join(os.path.dirname(__file__), "web")
 YEAR = "2026"
+CSS_VERSION = "20261020"   # bump after ./build_css.sh so browsers refetch styles.css
+PUBLISHED = "2026-06-16"
+UPDATED = "2026-10-20"   # bump whenever cost data or copy changes (Article dateModified + sitemap lastmod)
 
 # ---------------------------------------------------------------- ANALYTICS / SOCIAL
 # GA4: founder drops the real Measurement ID here. While it stays the placeholder (or empty)
@@ -110,7 +113,7 @@ TRADES = {
   "hvac-installation": {
     "noun": "HVAC installation", "a": "an HVAC installation",
     "kw": "HVAC installation cost",
-    "lo": 7000, "hi": 14000, "basis": "for a full central system in an average home",
+    "lo": 8000, "hi": 16000, "basis": "for a full central system (AC + furnace) in an average home", "anchor": 1,
     "intro": "Installing or replacing a central heating and cooling system is a major mechanical job priced by system size (tonnage), efficiency rating, and the condition of your existing ductwork.",
     "table_title": "Cost by system type",
     "table": [
@@ -140,7 +143,7 @@ TRADES = {
   "kitchen-remodel": {
     "noun": "kitchen remodel", "a": "a kitchen remodel",
     "kw": "kitchen remodel cost",
-    "lo": 15000, "hi": 45000, "basis": "for a mid-range remodel",
+    "lo": 15000, "hi": 45000, "basis": "for a typical cosmetic-to-mid-range remodel",
     "intro": "Kitchen remodels span an enormous range — from a cosmetic refresh to a gut renovation that moves walls and plumbing. Scope, cabinetry, and finishes drive nearly all of the cost.",
     "table_title": "Cost by remodel tier",
     "table": [
@@ -157,7 +160,7 @@ TRADES = {
     ],
     "faqs": [
       ("How much does a kitchen remodel cost in {city}?",
-       "A mid-range kitchen remodel in {city} typically runs {range}. Cosmetic refreshes cost less; major layout changes with custom cabinetry run well above it."),
+       "A typical kitchen remodel in {city}, from a cosmetic refresh up to new mid-range cabinets and counters, runs about {range}. Major layout changes with custom cabinetry run well above it."),
       ("Does a kitchen remodel add resale value?",
        "Kitchens are among the highest-ROI remodels, with minor and mid-range projects generally recouping more of their cost than high-end gut jobs at resale."),
       ("How long does a kitchen remodel take?",
@@ -199,7 +202,7 @@ TRADES = {
   "bathroom-remodel": {
     "noun": "bathroom remodel", "a": "a bathroom remodel",
     "kw": "bathroom remodel cost",
-    "lo": 12000, "hi": 25000, "basis": "for a mid-range full bathroom",
+    "lo": 12000, "hi": 25000, "basis": "for a mid-range full bathroom", "anchor": 1,
     "intro": "Bathroom remodels run from a fixture-and-tile refresh to a full gut that relocates plumbing. Tile work, fixtures, and whether the layout changes drive most of the price.",
     "table_title": "Cost by remodel scope",
     "table": [
@@ -258,7 +261,7 @@ TRADES = {
   "interior-painting": {
     "noun": "interior painting", "a": "an interior paint job",
     "kw": "interior painting cost",
-    "lo": 2500, "hi": 6000, "basis": "to paint the interior of a 2,000 sq ft home",
+    "lo": 2500, "hi": 6000, "basis": "to paint the interior of a 2,000 sq ft home", "anchor": 1,
     "intro": "Interior painting is priced by square footage and surface count. How many rooms, the condition of the walls, ceiling and trim detail, and paint quality set the price.",
     "table_title": "Cost by project scope",
     "table": [
@@ -317,7 +320,7 @@ TRADES = {
   "electrical-panel-upgrade": {
     "noun": "electrical panel upgrade", "a": "an electrical panel upgrade",
     "kw": "electrical panel upgrade cost",
-    "lo": 2000, "hi": 4000, "basis": "to upgrade to 200-amp service",
+    "lo": 2000, "hi": 4000, "basis": "to upgrade to 200-amp service", "anchor": 1,
     "intro": "Upgrading an electrical panel boosts your home's capacity for modern loads like EV chargers, heat pumps, and additions. Cost depends on the new amperage and whether the service entrance also needs work.",
     "table_title": "Cost by scope",
     "table": [
@@ -346,9 +349,9 @@ TRADES = {
   "solar-panel-installation": {
     "noun": "solar panel installation", "a": "a solar panel installation",
     "kw": "solar panel installation cost",
-    "lo": 16000, "hi": 26000, "basis": "for a typical 7 kW system, before incentives",
-    "intro": "A residential solar system is priced mainly by size in kilowatts, plus panel and inverter quality and whether you add battery storage. Federal and local incentives can cut the net cost substantially.",
-    "table_title": "Cost by system size (before incentives)",
+    "lo": 16000, "hi": 26000, "basis": "for a typical 7 kW system (cash price)", "anchor": 1,
+    "intro": "A residential solar system is priced mainly by size in kilowatts, plus panel and inverter quality and whether you add battery storage. The 30% federal tax credit for homeowner-owned systems ended on December 31, 2025, so today the cash price is closer to what you actually pay, unless you lease or sign a power purchase agreement.",
+    "table_title": "Cost by system size (cash price)",
     "table": [
       ("Small (5 kW)", 12000, 20000),
       ("Average (7 kW)", 16000, 26000),
@@ -359,23 +362,23 @@ TRADES = {
       ("Equipment quality", "Premium panels and inverters (and microinverters) cost more but produce more and last longer."),
       ("Roof type & complexity", "Steep, multi-plane, tile, or shaded roofs raise the install labor."),
       ("Battery storage", "Adding a home battery for backup or time-of-use savings adds several thousand dollars."),
-      ("Incentives", "The federal tax credit and any state or utility rebates reduce the net cost well below the sticker price."),
+      ("Incentives & ownership", "The federal residential solar credit (Section 25D) ended for systems installed after 2025. Leases and power purchase agreements can still pass a business tax credit through as a lower monthly price; local utility rebates vary."),
     ],
     "faqs": [
       ("How much does solar panel installation cost in {city}?",
-       "A typical 7 kW residential solar system in {city} runs about {range} before incentives. The federal tax credit and any local rebates lower the net cost from there."),
+       "A typical 7 kW residential solar system in {city} runs about {range} if you buy it outright. The 30% federal homeowner tax credit ended after 2025, so any savings now come from local utility rebates or from leasing instead of buying."),
       ("Is home solar worth it?",
        "Solar pays back best where electricity is expensive and sun exposure is good; payback periods commonly land in the 6–12 year range, after which the power is essentially free."),
       ("How long does a solar installation take?",
        "The rooftop install is usually 1–3 days, but permitting and utility interconnection can stretch the full timeline to several weeks."),
-      ("Does solar qualify for a tax credit?",
-       "Residential solar has qualified for a federal tax credit on the system cost, often alongside state or utility incentives. Confirm current rules with a tax professional."),
+      ("Is there still a federal tax credit for solar?",
+       "Not for homeowners who buy their system. The 30% residential clean energy credit (Section 25D) ended for systems installed after December 31, 2025. Leased and PPA systems are owned by the installer, who may still claim a business credit and pass part of it on. Confirm current rules with a tax professional."),
     ],
   },
   "fence-installation": {
     "noun": "fence installation", "a": "a fence installation",
     "kw": "fence installation cost",
-    "lo": 3000, "hi": 7500, "basis": "for about 150 linear feet",
+    "lo": 3000, "hi": 7500, "basis": "for about 150 linear feet of wood privacy fence", "anchor": 1,
     "intro": "Fencing is priced by linear foot and material, then by height, gates, and terrain. A standard residential yard runs roughly 150 linear feet.",
     "table_title": "Cost by material (about 150 linear feet)",
     "table": [
@@ -566,7 +569,7 @@ def city_groups():
             groups.append((REGION_TITLES.get(region, region), slugs))
     return groups
 
-def head(title, desc, canonical, og_type="website", ld_blocks=()):
+def head(title, desc, canonical, og_type="website", ld_blocks=(), indexable=True):
     """Shared <head> markup: meta, OG (incl. og:image), canonical, fonts, GA4, JSON-LD."""
     ld = "".join(f'<script type="application/ld+json">{json.dumps(b)}</script>\n' for b in ld_blocks)
     return f"""<meta charset="utf-8" />
@@ -584,8 +587,9 @@ def head(title, desc, canonical, og_type="website", ld_blocks=()):
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="{OG_IMAGE}" />
 <link rel="canonical" href="{canonical}" />
+{"" if indexable else ROBOTS_NOINDEX}
 {FAVICON}
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/styles.css?v={CSS_VERSION}" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>body{{font-family:Inter,system-ui,sans-serif}}</style>
@@ -607,7 +611,7 @@ def site_header():
 def site_footer():
     """Global footer — links every trade hub + the cities index + E-E-A-T pages on every page."""
     trade_links = "".join(
-        f'<a href="/{ts}" class="hover:text-slate-900 block py-0.5">{TRADES[ts]["noun"].title()} cost</a>'
+        f'<a href="/{ts}" class="hover:text-slate-900 block py-0.5">{title_case(TRADES[ts]["noun"])} cost</a>'
         for ts in TRADES)
     return f"""<footer class="border-t border-slate-200 mt-12 bg-slate-50">
   <div class="max-w-5xl mx-auto px-6 py-10 text-sm text-slate-500">
@@ -638,6 +642,44 @@ SOURCE_NOTE = ("Ranges are typical national project costs from public contractor
                "surveys), adjusted by a local cost-of-construction index for each city. "
                "<a href=\"/how-we-estimate\" class=\"text-emerald-700 underline\">See our methodology</a>.")
 
+
+# Region clones: the ~140 bulk California cities share their region's cost index AND note,
+# so their pages are identical except for the city name -- the exact "city-name swap" pattern
+# Google's scaled-content-abuse policy demotes. Until each gets real local data (permit fees,
+# climate zone, local labor index), they stay live for visitors and crawlable (follow) but are
+# noindexed and left out of the sitemap, so crawl and ranking signals go to the 16 metros that
+# carry their own data. Flip to True once clones are differentiated (one constant, regenerate).
+INDEX_REGION_CLONES = False
+ROBOTS_NOINDEX = '<meta name="robots" content="noindex,follow" />'
+
+def is_indexable(cslug):
+    return INDEX_REGION_CLONES or "region" not in CITIES[cslug]
+
+def nearby_cities(cslug, n=12):
+    """Cities to cross-link from a cost page: same-region California cities first (the
+    searches a nearby homeowner also makes), then the featured metros. Before 10-20 every
+    page linked only the 16 featured metros, so a Fremont page sent nobody to Hayward."""
+    region = CITIES[cslug].get("region")
+    ring = [s for (s, _n, r) in CA_CITIES if region and r == region and s not in FEATURED]
+    out = []
+    if cslug in ring:   # the next 8 around the region ring, so every city is linked by 8 siblings
+        i = ring.index(cslug)
+        out = [ring[(i + k) % len(ring)] for k in range(1, min(9, len(ring)))]
+    out += [fc for fc in FEATURED if fc != cslug and fc not in out]
+    return out[:n]
+
+def title_case(noun):
+    """'HVAC installation' -> 'HVAC Installation' (str.title() printed 'Hvac' sitewide)."""
+    return " ".join(w if w.isupper() else w[:1].upper() + w[1:] for w in noun.split())
+
+def clip(text, n):
+    """Shorten text to at most n chars on a word boundary (no mid-word cuts in meta descriptions)."""
+    if len(text) <= n:
+        return text
+    return text[:n].rsplit(" ", 1)[0].rstrip(",;:—-") + "…"
+
+DISCLOSURE = "Partner link: we may earn a referral fee if you request quotes. It never changes our cost ranges."
+
 # ---------------------------------------------------------------- TEMPLATE
 def page_html(tslug, t, cslug, c):
     idx = c["idx"]; cn = c["name"]; city_short = cn.split(",")[0]
@@ -645,8 +687,8 @@ def page_html(tslug, t, cslug, c):
     slug = f"how-much-does-{tslug}-cost-in-{cslug}"
     url = f"{DOMAIN}/{slug}"
     lg = leadgen_url(tslug, c.get("zip", ""))
-    title = f"How Much Does {t['noun'].title()} Cost in {city_short}? ({YEAR} Prices)"
-    desc = (f"{t['noun'].title()} in {cn} typically costs {headline_range} {t['basis']}. "
+    title = f"How Much Does {title_case(t['noun'])} Cost in {city_short}? ({YEAR} Prices)"
+    desc = (f"{title_case(t['noun'])} in {cn} typically costs {headline_range} {t['basis']}. "
             f"See {YEAR} price ranges, what drives the cost, and how to get local quotes.")
     rows = "".join(
         f'<tr class="border-b border-slate-200"><td class="py-2 pr-4">{html.escape(label)}</td>'
@@ -664,35 +706,35 @@ def page_html(tslug, t, cslug, c):
     faq_ld = {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
         {"@type":"Question","name":q,"acceptedAnswer":{"@type":"Answer","text":a}} for (q,a) in faq_pairs]}
     article_ld = {"@context":"https://schema.org","@type":"Article",
-        "headline":title,"datePublished":"2026-06-16","dateModified":"2026-06-16",
+        "headline":title,"datePublished":PUBLISHED,"dateModified":UPDATED,
         "author":{"@type":"Organization","name":BRAND},
         "publisher":{"@type":"Organization","name":BRAND,"url":DOMAIN},"description":desc}
     breadcrumb_ld = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":f"{DOMAIN}/"},
-        {"@type":"ListItem","position":2,"name":f"{t['noun'].title()} cost","item":f"{DOMAIN}/{tslug}"},
+        {"@type":"ListItem","position":2,"name":f"{title_case(t['noun'])} cost","item":f"{DOMAIN}/{tslug}"},
         {"@type":"ListItem","position":3,"name":city_short,"item":f"{DOMAIN}/{cslug}"},
-        {"@type":"ListItem","position":4,"name":f"{t['noun'].title()} in {city_short}","item":url}]}
+        {"@type":"ListItem","position":4,"name":f"{title_case(t['noun'])} in {city_short}","item":url}]}
     # other cities for this trade (internal links)
-    _link_cities = [fc for fc in FEATURED if fc != cslug][:12]
+    _link_cities = nearby_cities(cslug)
     other_cities = ", ".join(
         f'<a href="/how-much-does-{tslug}-cost-in-{fc}" class="text-emerald-700 underline">{CITIES[fc]["name"].split(",")[0]}</a>'
         for fc in _link_cities )
     other_trades = "".join(
-        f'<li><a href="/how-much-does-{ot}-cost-in-{cslug}" class="text-emerald-700 underline">{TRADES[ot]["noun"].title()} in {city_short}</a></li>'
+        f'<li><a href="/how-much-does-{ot}-cost-in-{cslug}" class="text-emerald-700 underline">{title_case(TRADES[ot]["noun"])} in {city_short}</a></li>'
         for ot in TRADES if ot != tslug)
     return f"""<!doctype html>
 <html lang="en">
 <head>
-{head(title, desc, url, og_type="article", ld_blocks=(article_ld, faq_ld, breadcrumb_ld))}
+{head(title, desc, url, og_type="article", ld_blocks=(article_ld, faq_ld, breadcrumb_ld), indexable=is_indexable(cslug))}
 </head>
 <body class="antialiased text-slate-900 bg-white">
 {site_header()}
 <article class="max-w-3xl mx-auto px-6 py-12">
   <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
     <a href="/" class="hover:text-emerald-700">Home</a> ›
-    <a href="/{tslug}" class="hover:text-emerald-700">{t['noun'].title()} cost</a> ›
+    <a href="/{tslug}" class="hover:text-emerald-700">{title_case(t['noun'])} cost</a> ›
     <a href="/{cslug}" class="hover:text-emerald-700">{html.escape(city_short)}</a> ›
-    <span class="text-slate-700">{t['noun'].title()}</span>
+    <span class="text-slate-700">{title_case(t['noun'])}</span>
   </nav>
   <div class="text-emerald-700 text-sm font-semibold uppercase tracking-wider mb-3">{YEAR} cost guide · {html.escape(cn)}</div>
   <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight mb-4">How much does {t['noun']} cost in {html.escape(city_short)}?</h1>
@@ -702,6 +744,7 @@ def page_html(tslug, t, cslug, c):
     <p class="font-semibold text-emerald-900 mb-2">Get free {t['noun']} quotes from vetted {html.escape(city_short)} pros</p>
     <p class="text-slate-700 mb-4">Compare a few local quotes before you commit — prices for the same job vary widely between contractors.</p>
     <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" data-cta="compare-quotes-top" class="inline-block bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-emerald-700">Compare local quotes →</a>
+    <p class="text-xs text-slate-500 mt-3">{DISCLOSURE}</p>
   </div>
 
   <h2 class="text-2xl font-bold mt-10 mb-3">{html.escape(t['table_title'])} in {html.escape(city_short)}</h2>
@@ -728,16 +771,17 @@ def page_html(tslug, t, cslug, c):
     <div class="text-emerald-400 text-sm font-semibold uppercase tracking-wider mb-2">Ready to start?</div>
     <h3 class="text-2xl font-bold mb-3">Get matched with vetted {html.escape(city_short)} {t['noun']} pros and compare free quotes.</h3>
     <a href="{lg}" target="_blank" rel="nofollow sponsored noopener" data-cta="compare-quotes-bottom" class="inline-block bg-white text-slate-900 font-semibold px-5 py-2.5 rounded-lg hover:bg-slate-100">Compare local quotes →</a>
+    <p class="text-xs text-slate-300 mt-3">{DISCLOSURE}</p>
   </div>
 
-  <h2 class="text-xl font-bold mt-10 mb-3">{t['noun'].title()} costs in other cities</h2>
+  <h2 class="text-xl font-bold mt-10 mb-3">{title_case(t['noun'])} costs in other cities</h2>
   <p class="text-slate-700 mb-2">{other_cities}</p>
   <p class="mb-4"><a href="/{tslug}" class="text-emerald-700 font-semibold underline">See {t['noun']} costs in all {len(CITIES)} cities →</a></p>
   <h2 class="text-xl font-bold mt-6 mb-3">Other project costs in {html.escape(city_short)}</h2>
   <ul class="list-disc pl-6 space-y-1">{other_trades}</ul>
   <p class="mt-2"><a href="/{cslug}" class="text-emerald-700 font-semibold underline">See all home project costs in {html.escape(city_short)} →</a></p>
 
-  <p class="text-sm text-slate-500 mt-8 italic">Published 2026-06-16. Cost ranges are general {YEAR} estimates for guidance only, not quotes. Get written bids from licensed local contractors. See <a href="/how-we-estimate" class="underline">how we estimate</a> and <a href="/about" class="underline">about us</a>.</p>
+  <p class="text-sm text-slate-500 mt-8 italic">Published {PUBLISHED}, updated {UPDATED}. Cost ranges are general {YEAR} estimates for guidance only, not quotes. Get written bids from licensed local contractors. See <a href="/how-we-estimate" class="underline">how we estimate</a> and <a href="/about" class="underline">about us</a>.</p>
 </article>
 {site_footer()}
 </body>
@@ -757,14 +801,14 @@ def city_hub_html(cslug, c):
         {"@type":"ListItem","position":3,"name":city_short,"item":url}]}
     cards = "".join(
         f'<a href="/how-much-does-{ts}-cost-in-{cslug}" class="block border border-slate-200 rounded-xl p-5 hover:border-emerald-400 hover:bg-emerald-50/40">'
-        f'<div class="font-bold text-lg">{TRADES[ts]["noun"].title()}</div>'
+        f'<div class="font-bold text-lg">{title_case(TRADES[ts]["noun"])}</div>'
         f'<div class="text-emerald-700 font-semibold">{rng(TRADES[ts]["lo"], TRADES[ts]["hi"], idx)}</div>'
         f'<div class="text-sm text-slate-500">{TRADES[ts]["basis"]}</div></a>'
         for ts in TRADES)
     return f"""<!doctype html>
 <html lang="en">
 <head>
-{head(title, desc, url, og_type="website", ld_blocks=(breadcrumb_ld,))}
+{head(title, desc, url, og_type="website", ld_blocks=(breadcrumb_ld,), indexable=is_indexable(cslug))}
 </head>
 <body class="antialiased text-slate-900 bg-white">
 {site_header()}
@@ -788,11 +832,11 @@ def city_hub_html(cslug, c):
 def trade_hub_html(tslug, t):
     url = f"{DOMAIN}/{tslug}"
     noun = t["noun"]
-    title = f"{noun.title()} Cost by City ({YEAR}) — {BRAND}"
-    desc = (f"Compare {YEAR} {noun} cost ranges across {len(CITIES)} cities. {t['intro'][:120]}")
+    title = f"{title_case(noun)} Cost by City ({YEAR}) — {BRAND}"
+    desc = (f"Compare {YEAR} {noun} cost ranges across {len(CITIES)} cities. {clip(t['intro'], 120)}")
     breadcrumb_ld = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":f"{DOMAIN}/"},
-        {"@type":"ListItem","position":2,"name":f"{noun.title()} cost","item":url}]}
+        {"@type":"ListItem","position":2,"name":f"{title_case(noun)} cost","item":url}]}
     sections = ""
     for group_title, slugs in city_groups():
         items = "".join(
@@ -812,9 +856,9 @@ def trade_hub_html(tslug, t):
 <main class="max-w-5xl mx-auto px-6 py-12">
   <nav class="text-sm text-slate-500 mb-5" aria-label="Breadcrumb">
     <a href="/" class="hover:text-emerald-700">Home</a> ›
-    <span class="text-slate-700">{noun.title()} cost</span>
+    <span class="text-slate-700">{title_case(noun)} cost</span>
   </nav>
-  <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">{noun.title()} cost by city</h1>
+  <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">{title_case(noun)} cost by city</h1>
   <p class="text-xl text-slate-600 leading-relaxed mb-2">{html.escape(t['intro'])}</p>
   <p class="text-lg text-slate-600 mb-6">Nationally this runs about <strong>{rng(t['lo'], t['hi'], 1.0)}</strong> {t['basis']}. Pick your city for a local {YEAR} estimate.</p>
   {sections}
@@ -893,7 +937,7 @@ def how_we_estimate_html():
     url = f"{DOMAIN}/how-we-estimate"
     title = f"How We Estimate Costs — Methodology — {BRAND}"
     desc = f"Our methodology: how {BRAND} builds {YEAR} home-project cost ranges from national pricing data and a local cost-of-construction index for each city."
-    trade_list = "".join(f"<li>{t['noun'].title()}</li>" for t in TRADES.values())
+    trade_list = "".join(f"<li>{title_case(t['noun'])}</li>" for t in TRADES.values())
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -940,7 +984,7 @@ def index_html():
             for cslug in FEATURED)
         links += f'<a href="/{tslug}" class="block px-3 py-2 rounded-lg hover:bg-emerald-50 text-slate-500 text-sm">+ all {len(CITIES)} cities →</a>'
         cards += (f'<div class="border border-slate-200 rounded-2xl p-6">'
-                  f'<h2 class="text-2xl font-bold mb-1"><a href="/{tslug}" class="hover:text-emerald-700">{t["noun"].title()} cost</a></h2>'
+                  f'<h2 class="text-2xl font-bold mb-1"><a href="/{tslug}" class="hover:text-emerald-700">{title_case(t["noun"])} cost</a></h2>'
                   f'<p class="text-slate-600 mb-3">{YEAR} price ranges by city.</p>'
                   f'<div class="grid sm:grid-cols-2 gap-1">{links}</div></div>')
     return f"""<!doctype html>
@@ -958,6 +1002,17 @@ def index_html():
 </body></html>
 """
 
+# ---------------------------------------------------------------- SITEMAP
+def sitemap_xml(cost_pages, hub_pages, info_pages):
+    """sitemap.xml body. lastmod = UPDATED, so a content change is visible to crawlers."""
+    rows = [(f"{DOMAIN}/", "1.0")]
+    rows += [(f"{DOMAIN}/{p}", "0.7") for p in list(info_pages) + list(hub_pages)]
+    rows += [(f"{DOMAIN}/{p}", "0.8") for p in cost_pages]
+    body = "".join(f"  <url><loc>{u}</loc><lastmod>{UPDATED}</lastmod><changefreq>monthly</changefreq>"
+                   f"<priority>{pri}</priority></url>\n" for (u, pri) in rows)
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + body + "</urlset>\n")
+
 # ---------------------------------------------------------------- WRITE
 def write(slug, contents):
     with open(os.path.join(OUT, slug + ".html"), "w") as f:
@@ -973,11 +1028,11 @@ def main():
         for cslug, c in CITIES.items():
             slug = f"how-much-does-{tslug}-cost-in-{cslug}"
             write(slug, page_html(tslug, t, cslug, c))
-            cost_pages.append(slug)
+            if is_indexable(cslug): cost_pages.append(slug)
     # per-city hubs (/[city])
     for cslug, c in CITIES.items():
         write(cslug, city_hub_html(cslug, c))
-        hub_pages.append(cslug)
+        if is_indexable(cslug): hub_pages.append(cslug)
     # per-trade hubs (/[trade])
     for tslug, t in TRADES.items():
         write(tslug, trade_hub_html(tslug, t))
@@ -991,17 +1046,8 @@ def main():
         f.write(index_html())
 
     # sitemap
-    sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    def add(u, pri):
-        nonlocal sm
-        sm += f"  <url><loc>{u}</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>{pri}</priority></url>\n"
-    add(f"{DOMAIN}/", "1.0")
-    for p in info_pages: add(f"{DOMAIN}/{p}", "0.7")
-    for p in hub_pages:  add(f"{DOMAIN}/{p}", "0.7")
-    for p in cost_pages: add(f"{DOMAIN}/{p}", "0.8")
-    sm += "</urlset>\n"
     with open(os.path.join(OUT, "sitemap.xml"), "w") as f:
-        f.write(sm)
+        f.write(sitemap_xml(cost_pages, hub_pages, info_pages))
     with open(os.path.join(OUT, "robots.txt"), "w") as f:
         f.write(f"User-agent: *\nAllow: /\nSitemap: {DOMAIN}/sitemap.xml\n")
     # Google Search Console HTML-file verification (must stay live permanently)
